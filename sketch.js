@@ -1,6 +1,8 @@
+let checkbox;
+let button;
 
-const MAX_X = 40;
-const MAX_Y = 60;
+const MAX_X = 50;
+const MAX_Y = 50;
 const N = MAX_X*MAX_Y;
 
 const SIZE = 10;
@@ -30,8 +32,8 @@ function advance(){
       neighbors = floor(grid[(i-1)]) + floor(grid[(i+1)]) + floor(grid[(i-MAX_X+N)%N]) + floor(grid[(i+MAX_X)%N]) + floor(grid[(i-MAX_X-1+N)%N]) + floor(grid[(i-MAX_X+1+N)%N]) + floor(grid[(i+MAX_X-1)%N]) + floor(grid[(i+MAX_X+1)%N]);
 
       if(neighbors<2||neighbors>3){
-        temp_grid[i]=grid[i]*TRAIL;
-        fill("black");
+        temp_grid[i]=grid[i]*TRAIL*0;
+        fill(temp_grid[i]);
         rect(x*SIZE, y*SIZE, SIZE, SIZE);
       } else if(neighbors==3){
         temp_grid[i]=1;
@@ -48,27 +50,50 @@ function advance(){
 
 }
 
+
 function setup() {
     createCanvas(C_W, C_H);
     background("black");
+    checkbox = createCheckbox('Pause', false);
+    checkbox.changed(myCheckedEvent);
+    button = createButton('CLEAR');
+    button.position(C_W/2, C_H);
+    button.mousePressed(CLEAR);
     for(i=0; i<MAX_X*MAX_Y; i+=1){
         grid.push(floor(random(2)));
-        // grid.push(0);
     }
-  // put setup code here
+}
+
+function CLEAR() {
+    fill(0);
+    for(i=0; i<MAX_X*MAX_Y; i+=1){
+        x=i%MAX_X;
+        y=floor(i/MAX_X);
+        grid[i]=0;
+        rect(x*SIZE, y*SIZE, SIZE, SIZE);
+    }
+}
+
+function myCheckedEvent() {
+  if (this.checked()) {
+    console.log('Checking!');
+  } else {
+    console.log('Unchecking!');
+  }
 }
 
 function draw() {
   // put drawing code here
-  if(mouseIsPressed||keyIsPressed){
-    advance();
-  }
   if(mouseIsPressed){
     x=floor((mouseX/SIZE)%MAX_X);
     y=floor((mouseY/SIZE)%MAX_Y);
     i=x+MAX_X*y;
     grid[x+y*MAX_Y]=1;
-    console.log(`${mouseX},${mouseY}=>${x},${y}`);
+  }
+  if(mouseIsPressed||keyIsPressed){
+    if(!checkbox.checked()){
+        advance();
+    }
   }
   for(i=0; i < MAX_X*MAX_Y; i+=1){
     x=i%MAX_X;
