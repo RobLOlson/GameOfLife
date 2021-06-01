@@ -1,23 +1,36 @@
-let C_W = 800;
-let C_H = 800;
 
-const MAX_X = 50;
-const MAX_Y = 50;
+const MAX_X = 40;
+const MAX_Y = 60;
 const N = MAX_X*MAX_Y;
 
 const SIZE = 10;
 
+let C_W = MAX_X*SIZE;
+let C_H = MAX_Y*SIZE;
+
+let TRAIL = 0.9;
+
 let grid = [];
 let temp_grid = [];
 
-function mouseWheel(){
+function mouseWheel(event){
+    if(event.delta < 0){
+        TRAIL *= 1.05;
+    } else {
+        TRAIL *= 0.95;
+    }
+
+    console.log(TRAIL);
+}
+
+function advance(){
     for(i=0; i < N; i+=1){
       x=i%MAX_X;
       y=floor(i/MAX_X);
       neighbors = floor(grid[(i-1)]) + floor(grid[(i+1)]) + floor(grid[(i-MAX_X+N)%N]) + floor(grid[(i+MAX_X)%N]) + floor(grid[(i-MAX_X-1+N)%N]) + floor(grid[(i-MAX_X+1+N)%N]) + floor(grid[(i+MAX_X-1)%N]) + floor(grid[(i+MAX_X+1)%N]);
 
       if(neighbors<2||neighbors>3){
-        temp_grid[i]=grid[i]*.99;
+        temp_grid[i]=grid[i]*TRAIL;
         fill("black");
         rect(x*SIZE, y*SIZE, SIZE, SIZE);
       } else if(neighbors==3){
@@ -47,8 +60,8 @@ function setup() {
 
 function draw() {
   // put drawing code here
-  if(keyIsPressed){
-    mouseWheel();
+  if(mouseIsPressed||keyIsPressed){
+    advance();
   }
   if(mouseIsPressed){
     x=floor((mouseX/SIZE)%MAX_X);
